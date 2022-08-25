@@ -2,7 +2,7 @@ package src.services;
 
 import org.jetbrains.annotations.NotNull;
 import src.methods.Iteration;
-import src.methods.Secant;
+import src.methods.Chord;
 import src.methods.Tangent;
 import src.objects.AnswerX;
 import src.objects.EqSystem;
@@ -20,7 +20,7 @@ public class Process {
 
     private void process() {
         while (true) {
-            String command = prompt(">");
+            String command = prompt();
             if (command.equals("q")) break;
 
             switch (command) {
@@ -71,6 +71,7 @@ public class Process {
             3: -x^2 + 5 = 0""");
         printLine();
         int eq_id = getId(3);
+        System.out.println("Отлично, вы выбрали уравнение №" + eq_id);
 
         Func function = switch (eq_id) {
             case 1 -> new Func() {
@@ -104,44 +105,39 @@ public class Process {
                 }
             };
         };
-
-        System.out.println("Input precision:");
-        double precision = getFloat();
-        System.out.println("Input the initial approximation for Newton's method:");
-        double initApprox = getFloat();
+        System.out.println("Ещё немного входных данных.");
 
         double begin;
         double end;
 
-        while (true) {
-            System.out.println("Input the beginning of the interval for the Secant method:");
-            begin = getFloat();
-            System.out.println("Input the end of the interval for the Secant method:");
-            end = getFloat();
+        System.out.println("Введите начальное значение интервала для метода хорд:");
+        begin = getFloat();
+        System.out.println("Введите конечное значение интервала для метода хорд:");
+        end = getFloat();
 
-            if (function.calcFunc(begin) * function.calcFunc(end) > 0)
-                System.out.println("The interval contains either one or multiple solutions.");
-            else break;
-        }
+        System.out.println("Введите точность для метода касательных:");
+        double precision = getFloat();
+        System.out.println("Введите начальное приближение для метода касательных:");
+        double initApprox = getFloat();
 
         printLine();
-        System.out.println("Starting Newton's method...");
-        AnswerX newtSolution = new Tangent().calculate(function, precision, initApprox, 1);
-        System.out.println("The solution is: " + newtSolution.toString());
+        System.out.println("Проводим вычисения по методу хорд...");
+        AnswerX secSolution = new Chord().calculate(function, precision, begin, end, 1);
+        System.out.println("Ответ: " + secSolution.toString());
         printLine();
-        System.out.println("Starting the Secant method...");
-        AnswerX secSolution = new Secant().calculate(function, precision, begin, end, 1);
-        System.out.println("The solution is: " + secSolution.toString());
+        System.out.println("Проводим вычисления по методу касательных...");
+        AnswerX tangSolution = new Tangent().calculate(function, precision, initApprox, 1);
+        System.out.println("Ответ: " + tangSolution.toString());
         printLine();
 
-        System.out.println("The difference between the two solutions is: " +
-                FormatterToDouble.format(Math.abs(newtSolution.x - secSolution.x)));
+        System.out.println("Разница между ответами, полученными методом хорд и методом касательных: " +
+                FormatterToDouble.format(Math.abs(secSolution.x - tangSolution.x)));
     }
 
     private void multiple() {
         printLine();
         System.out.println("""
-            Choose an equation system to solve:
+            Выберите систему уравнений:
             1: y = x^3;
                y = x^2 - 6.
                
@@ -149,40 +145,44 @@ public class Process {
                y = x^2 - 0.5.""");
         printLine();
         int eq_id = getId(2);
+        System.out.println("Отлично, вы выбрали систему уравнений №" + eq_id);
 
-        EqSystem system = switch (eq_id) {
-            case 1 -> new EqSystem() {
+        EqSystem system;
+        if (eq_id == 1) {
+             system = new EqSystem() {
                 @Override
                 public double x1(double y) {
                     return Math.cbrt(y);
                 }
+
                 @Override
                 public double y2(double x) {
                     return Math.pow(x, 2) - 6;
                 }
             };
-            default -> new EqSystem() {
+        } else {
+            system = new EqSystem() {
                 @Override
                 public double x1(double y) {
-                    return Math.cbrt(10*y);
+                    return Math.cbrt(10 * y);
                 }
                 @Override
                 public double y2(double x) {
                     return Math.pow(x, 2) - 0.5;
                 }
             };
-        };
+        }
 
-        System.out.println("Input precision:");
+        System.out.println("Введите точность:");
         double precision = getFloat();
-        System.out.println("Input the initial approximation for x:");
+        System.out.println("Введите начальное приближение для x:");
         double x = getFloat();
-        System.out.println("Input the initial approximation for y:");
+        System.out.println("Введите начальное приближение для y:");
         double y = getFloat();
 
         printLine();
-        System.out.println("Starting the simple iteration method...");
-        System.out.println("The solution is: " +
+        System.out.println("Отлично! Проводим вычисления по методу простой итерации...");
+        System.out.println("Решение ситемы: " +
                 new Iteration().calculate(system, precision, x, y, 1).toString()
         );
     }
@@ -190,31 +190,31 @@ public class Process {
     private int getId(int upperLimit) {
         int ret = 0;
         while (true) {
-            String temp = prompt(">");
+            String temp = prompt();
 
             try { ret = Integer.parseInt(temp); }
             catch (NumberFormatException ignore) {}
 
             if (ret >= 1 && ret <= upperLimit) return ret;
-            System.out.println("Incorrect value, try again");
+            System.out.println("Введите число от 1 до " + upperLimit);
         }
     }
 
     private double getFloat() {
         while (true) {
-            String temp = prompt(">");
+            String temp = prompt();
 
             try { return Double.parseDouble(temp); }
-            catch (NumberFormatException e) { System.out.println("Incorrect value, try again"); }
+            catch (NumberFormatException e) { System.out.println("Неверно введённые данные, попробуйте ещё раз"); }
         }
     }
 
     private void err() {
-        System.out.println("Incorrect command. To see the list of commands, type \"h\".");
+        System.out.println("Такой команды не существует. Введите \"h\", чтобы увидеть список доступных команд.");
     }
 
-    private String prompt(String prompt) {
-        System.out.print(prompt);
+    private String prompt() {
+        System.out.print(">");
         return readFromScanner(new Scanner(System.in));
     }
 

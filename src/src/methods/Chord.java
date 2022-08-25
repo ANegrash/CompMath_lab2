@@ -3,7 +3,8 @@ package src.methods;
 import src.objects.AnswerX;
 import src.objects.Func;
 
-public class Secant {
+//метод хорд
+public class Chord {
 
     public AnswerX calculate(Func function, double precision, double begin, double end, int iterationCount) {
         double newBegin = begin - (function.calcFunc(begin)/(function.calcFunc(end) - function.calcFunc(begin)) *

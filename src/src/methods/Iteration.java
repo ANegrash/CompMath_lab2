@@ -3,6 +3,7 @@ package src.methods;
 import src.objects.AnswerXY;
 import src.objects.EqSystem;
 
+//метод простой итерации
 public class Iteration {
 
     public AnswerXY calculate(EqSystem system, double precision, double x, double y, int iterationCount) {

@@ -3,6 +3,7 @@ package src.methods;
 import src.objects.AnswerX;
 import src.objects.Func;
 
+//метод касательных
 public class Tangent {
 
     public AnswerX calculate(Func function, double precision, double approx, int iterationCount) {
