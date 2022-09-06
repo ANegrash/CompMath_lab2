@@ -6,7 +6,7 @@ public class AnswerX {
     public double x;
     public int iterations;
 
-    public AnswerX(double x, int iterations) {
+    public AnswerX (double x, int iterations) {
         this.x = x;
         this.iterations = iterations;
     }

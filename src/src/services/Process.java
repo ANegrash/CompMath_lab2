@@ -121,7 +121,7 @@ public class Process {
         double initApprox = getFloat();
 
         printLine();
-        System.out.println("Проводим вычисения по методу хорд...");
+        System.out.println("Проводим вычисления по методу хорд...");
         AnswerX secSolution = new Chord().calculate(function, precision, begin, end, 1);
         System.out.println("Ответ: " + secSolution.toString());
         printLine();
@@ -187,7 +187,7 @@ public class Process {
         );
     }
 
-    private int getId(int upperLimit) {
+    private int getId (int upperLimit) {
         int ret = 0;
         while (true) {
             String temp = prompt();
@@ -218,7 +218,7 @@ public class Process {
         return readFromScanner(new Scanner(System.in));
     }
 
-    private String readFromScanner(@NotNull Scanner scanner) {
+    private String readFromScanner (@NotNull Scanner scanner) {
         try { return scanner.nextLine(); }
         catch (NoSuchElementException e) { return "q"; }
     }
